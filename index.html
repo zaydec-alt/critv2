@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CRIT Prompt Builder</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 0 16px;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 16px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 70px;
+      margin-top: 8px;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+    #prompt {
+      white-space: pre-wrap;
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+      padding: 12px;
+      margin-top: 16px;
+    }
+    button {
+      margin-top: 12px;
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+    .small {
+      font-size: 12px;
+      color: #666;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>CRIT Prompt Builder</h1>
+  <p>Fill in the fields below, then click “Send to ChatGPT”.</p>
+
+  <label for="context">C – Context</label>
+  <textarea id="context" placeholder="What is this about? Background, situation, goal..."></textarea>
+
+  <label for="role">R – Role</label>
+  <textarea id="role" placeholder="Who should the AI act as? (e.g., scaling up coach, HR leader, sales coach)"></textarea>
+
+  <label for="interview">I – Interview / Information</label>
+  <textarea id="interview" placeholder="Key questions, information, constraints, audience, tone, etc."></textarea>
+
+  <label for="task">T – Task</label>
+  <textarea id="task" placeholder="What should the AI produce? (e.g., LinkedIn post, email, agenda, questions)"></textarea>
+
+  <h2>Generated Prompt</h2>
+  <div id="prompt"></div>
+  <button id="copyBtn">Send to ChatGPT</button>
+  <div class="small" id="status"></div>
+
+  <script>
+    const contextEl = document.getElementById('context');
+    const roleEl = document.getElementById('role');
+    const interviewEl = document.getElementById('interview');
+    const taskEl = document.getElementById('task');
+    const promptEl = document.getElementById('prompt');
+    const copyBtn = document.getElementById('copyBtn');
+    const statusEl = document.getElementById('status');
+
+    function buildPrompt() {
+      const c = contextEl.value.trim();
+      const r = roleEl.value.trim();
+      const i = interviewEl.value.trim();
+      const t = taskEl.value.trim();
+
+      const prompt = `
+You are an AI assistant using the CRIT framework.
+
+C – Context:
+${c || "[User did not provide context]"}
+
+R – Role:
+${r || "[No specific role provided]"}
+
+I – Interview / Information:
+${i || "[No extra info given]"}
+
+T – Task:
+${t || "[No task specified]"}
+
+Using the information above, respond clearly and step-by-step. If anything is missing, ask clarification questions before giving the final answer.
+      `.trim();
+
+      promptEl.textContent = prompt;
+    }
+
+    [contextEl, roleEl, interviewEl, taskEl].forEach(el => {
+      el.addEventListener('input', buildPrompt);
+    });
+
+    // NEW: copy + open ChatGPT with the prompt pre-filled
+    copyBtn.addEventListener('click', async () => {
+      const promptText = promptEl.textContent || "";
+
+      if (!promptText) {
+        statusEl.textContent = "⚠️ Please fill in at least one CRIT field first.";
+        return;
+      }
+
+      // Best-effort: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(promptText);
+        statusEl.textContent = "✅ Prompt copied & ChatGPT opened in a new tab.";
+      } catch (e) {
+        statusEl.textContent = "Opened ChatGPT. If needed, copy the prompt manually below.";
+      }
+
+      // Open ChatGPT with the prompt in the ?q= parameter
+      const chatUrl = "https://chat.openai.com/?q=" + encodeURIComponent(promptText);
+      window.open(chatUrl, "_blank");
+    });
+
+    // Initialize prompt on load
+    buildPrompt();
+  </script>
+</body>
+</html>
