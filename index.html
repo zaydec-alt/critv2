@@ -81,13 +81,15 @@
       const t = taskEl.value.trim();
 
       const prompt = `
-You are an AI assistant using the CRIT framework.
+You are now acting as: ${r || "[No role provided]"}.
+
+Follow the CRIT Framework below:
 
 C – Context:
 ${c || "[User did not provide context]"}
 
 R – Role:
-${r || "[No specific role provided]"}
+${r || "[No role provided]"}
 
 I – Interview / Information:
 ${i || "[No extra info given]"}
@@ -95,7 +97,7 @@ ${i || "[No extra info given]"}
 T – Task:
 ${t || "[No task specified]"}
 
-Using the information above, respond clearly and step-by-step. If anything is missing, ask clarification questions before giving the final answer.
+Produce your final output exactly as the role would — using their tone, expertise, and perspective. If anything is missing, ask for clarification before completing the task.
       `.trim();
 
       promptEl.textContent = prompt;
@@ -123,12 +125,4 @@ Using the information above, respond clearly and step-by-step. If anything is mi
       }
 
       // Open ChatGPT with the prompt in the ?q= parameter
-      const chatUrl = "https://chat.openai.com/?q=" + encodeURIComponent(promptText);
-      window.open(chatUrl, "_blank");
-    });
-
-    // Initialize prompt on load
-    buildPrompt();
-  </script>
-</body>
-</html>
+      const chatUrl = "https://chat.openai.com/?q=" + encodeURIComponent(promptTex
